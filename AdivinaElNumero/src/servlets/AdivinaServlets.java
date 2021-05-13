@@ -35,6 +35,8 @@ public class AdivinaServlets extends HttpServlet {
 				}
 			}
 			
+//Aqui me falta decirle si a encontrado el valor que yo queria, juego con esa variable, pero si no la ha encontrado al resultado le doy otra oopcion(La tengo que pensar). Esta en el ejemplo de javier por seacaso.			
+// para borrar la cookie, la caducidad de la cookie la ponemos en 0			
 			if (numero.equals(valorCookie)) {
 				request.setAttribute("adivinado", "enhorabuena has adivinado, el numero es" + valorCookie);
 				request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
