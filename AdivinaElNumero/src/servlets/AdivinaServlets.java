@@ -19,60 +19,111 @@ public class AdivinaServlets extends HttpServlet {
 	@SuppressWarnings("null")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		Cookie[] cookies = request.getCookies();
 		
+//COmprobar si ha metido algun numero, sino resirigir y mandar mensage		
+		String numero = request.getParameter("number");
+		if(numero==null) {
+			response.sendRedirect("/adivinaFront.jsp");
+		}
+		
+		Cookie[] cookies = request.getCookies();
+		String numeroAleat = null;
+			
 		if (cookies != null) {
 			
-			
-			String numero = request.getParameter("number");
 			String valorCookie = null;
+			String valorRecuperado=null;
 
-			for (Cookie c : cookies) {
-				if ("adivNumero".equals(c.getName())) {
-					valorCookie = c.getValue();
-					break;
-				}
+			valorCookie = buscarCookie(cookies);
+			
+			if (valorCookie!=null) {
+			valorRecuperado = valorCookie;
+			}else {					
+				valorRecuperado = crearCookie(request,response,numeroAleat);
 			}
 			
-//Aqui me falta decirle si a encontrado el valor que yo queria, juego con esa variable, pero si no la ha encontrado al resultado le doy otra oopcion(La tengo que pensar). Esta en el ejemplo de javier por seacaso.			
-// para borrar la cookie, la caducidad de la cookie la ponemos en 0			
-			if (numero.equals(valorCookie)) {
-				request.setAttribute("adivinado", "enhorabuena has adivinado, el numero es" + valorCookie);
-				request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
-			} else {
-				request.setAttribute("adivinado", "No has adivinado, intentalo otra vez");
-				request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
-			}
+			numero = request.getParameter("number");
+			
+			resultado(numero,valorRecuperado,request,response);
+
 		} else {
 			
-			String numeroAleat = "" + Math.floor(Math.random() * 10);
-			Cookie guardarNumero = new Cookie("adivNumero", numeroAleat);
-			guardarNumero.setMaxAge(60 * 60 * 24);
-			response.addCookie(guardarNumero);
 			
-			String numero = request.getParameter("number");
+			crearCookie(request, response,numeroAleat);			
+				
 			cookies = request.getCookies();
 			String valorCookie = null;
+	
+			numero = request.getParameter("number");
+			
+			resultado(numero,valorCookie,request,response);
 
+		}		
+				
+		}
+	
+		private void resultado(String numero, String valorRecuperado,HttpServletRequest request, HttpServletResponse response) {
+			if (numero.equals(valorRecuperado)) {
+				request.setAttribute("adivinado", "enhorabuena has adivinado, el numero es" + valorRecuperado);
+				borrarCookie(response);
+				try {
+					request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			} else {
+				request.setAttribute("adivinado", "No has adivinado, intentalo otra vez");
+				try {
+					request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
+				} catch (ServletException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		
+	}
+
+		String crearCookie(HttpServletRequest request, HttpServletResponse response,String  numeroAleat){	
+			
+				numeroAleat = "" + Math.floor(Math.random() * 10);
+				Cookie guardarNumero = new Cookie("adivNumero", numeroAleat);
+				guardarNumero.setMaxAge(60 * 60 * 24);
+				response.addCookie(guardarNumero);
+				
+				return numeroAleat;
+
+	}
+		
+		String buscarCookie(Cookie[] cookies) {
+			String valorCookie = null;
 			for (Cookie c : cookies) {
 				if ("adivNumero".equals(c.getName())) {
 					valorCookie = c.getValue();
 					break;
 				}
 			}
-			if (numero.equals(valorCookie)) {
-				request.setAttribute("adivinado", "enhorabuena has adivinado, el numero es" + valorCookie);
-				request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
-			} else {
-				request.setAttribute("adivinado", "No has adivinado, intentalo otra vez");
-				request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
-			}
-
+			return valorCookie;
+			
+			
+		}
+		
+		void borrarCookie(HttpServletResponse response) {
+			Cookie guardarNumero = new Cookie("adivNumero", "");
+			guardarNumero.setMaxAge(0);
+			response.addCookie(guardarNumero);
+			
 		}
 
-	}
-
+		
+		
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 

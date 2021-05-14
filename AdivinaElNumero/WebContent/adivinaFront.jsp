@@ -16,6 +16,6 @@
 	</form>
 	
 	<p>${adivinado}</p>
-	
+	${cookie.adivNumero.value}
 </body>
 </html>
