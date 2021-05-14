@@ -77,7 +77,7 @@ public class AdivinaServlets extends HttpServlet {
 				}
 				
 			} else {
-				request.setAttribute("adivinado", "No has adivinado, intentalo otra vez");
+				request.setAttribute("adivinado", "No hadfs adivinado, intentalo otra vez");
 				try {
 					request.getRequestDispatcher("/adivinaFront.jsp").forward(request, response);
 				} catch (ServletException e) {
